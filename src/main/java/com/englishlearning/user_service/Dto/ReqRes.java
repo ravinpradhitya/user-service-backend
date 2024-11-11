@@ -23,6 +23,10 @@ public class ReqRes {
     private String email;
     private String password;
     private String id;
+    private String schoolId;
+    private String schoolName;
+    private String schoolAddress;
+    private String schoolEmail;
     private OurUser ourUser;
     private List<OurUser> ourUserList;
 }

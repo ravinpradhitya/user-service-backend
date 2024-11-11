@@ -22,6 +22,10 @@ public class OurUser implements UserDetails {
     private String address;
     private String role;
 
+    @ManyToOne
+    @JoinColumn(name = "school_id")
+    private School school;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role));

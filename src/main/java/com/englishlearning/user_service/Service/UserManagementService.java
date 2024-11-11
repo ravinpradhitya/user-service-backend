@@ -2,6 +2,8 @@ package com.englishlearning.user_service.Service;
 
 import com.englishlearning.user_service.Dto.ReqRes;
 import com.englishlearning.user_service.Entity.OurUser;
+import com.englishlearning.user_service.Entity.School;
+import com.englishlearning.user_service.Repository.SchoolRepo;
 import com.englishlearning.user_service.Repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +20,9 @@ public class UserManagementService {
 
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private SchoolRepo schoolRepo;
 
     @Autowired
     private JWTUtils jwtUtils;
@@ -39,6 +44,17 @@ public class UserManagementService {
             ourUser.setRole(registrationRequest.getRole());
             ourUser.setName(registrationRequest.getName());
             ourUser.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
+
+            if (registrationRequest.getSchoolId() != null) {
+                School school = schoolRepo.findById(registrationRequest.getSchoolId()).orElseThrow(
+                        () -> new RuntimeException("School not found")
+                );
+                ourUser.setSchool(school);
+            } else if (registrationRequest.getSchoolName() != null) {
+                School school = schoolRepo.findByName(registrationRequest.getSchoolName());
+                ourUser.setSchool(school);
+            }
+
             OurUser ourUserResult = userRepo.save(ourUser);
             if (ourUserResult.getId() != null) {
                 resp.setOurUser((ourUserResult));
