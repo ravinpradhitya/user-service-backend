@@ -47,8 +47,7 @@ public class UserManagementService {
 
             if (registrationRequest.getSchoolId() != null) {
                 School school = schoolRepo.findById(registrationRequest.getSchoolId()).orElseThrow(
-                        () -> new RuntimeException("School not found")
-                );
+                        () -> new RuntimeException("School not found"));
                 ourUser.setSchool(school);
             } else if (registrationRequest.getSchoolName() != null) {
                 School school = schoolRepo.findByName(registrationRequest.getSchoolName());
@@ -84,7 +83,7 @@ public class UserManagementService {
             response.setExpirationTime("24Hrs");
             response.setMessage("Successfully Logged In");
 
-        }catch (Exception e){
+        } catch (Exception e){
             response.setStatusCode(500);
             response.setMessage(e.getMessage());
         }
@@ -168,7 +167,7 @@ public class UserManagementService {
         return reqRes;
     }
 
-    public ReqRes updateUser(String userId, OurUser updatedUser) {
+    public ReqRes updateUser(String userId, ReqRes updatedUser) {
         ReqRes reqRes = new ReqRes();
         try {
             Optional<OurUser> userOptional = userRepo.findById(userId);
@@ -183,6 +182,15 @@ public class UserManagementService {
                 if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
                     // Encode the password and update it
                     existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+                }
+
+                if (updatedUser.getSchoolId() != null) {
+                    School school = schoolRepo.findById(updatedUser.getSchoolId()).orElseThrow(
+                            () -> new RuntimeException("School not found"));
+                    existingUser.setSchool(school);
+                } else if (updatedUser.getSchoolName() != null) {
+                    School school = schoolRepo.findByName(updatedUser.getSchoolName());
+                    existingUser.setSchool(school);
                 }
 
                 OurUser savedUser = userRepo.save(existingUser);
@@ -219,6 +227,26 @@ public class UserManagementService {
         }
         return reqRes;
 
+    }
+
+    public ReqRes getStudents() {
+        ReqRes reqRes = new ReqRes();
+        try {
+            List<OurUser> result = userRepo.findByRole("student");
+            if (!result.isEmpty()) {
+                reqRes.setOurUserList(result);
+                reqRes.setStatusCode(200);
+                reqRes.setMessage("Successful");
+            } else {
+                reqRes.setStatusCode(404);
+                reqRes.setMessage("No users found");
+            }
+            return reqRes;
+        } catch (Exception e) {
+            reqRes.setStatusCode(500);
+            reqRes.setMessage("Error occurred: " + e.getMessage());
+            return reqRes;
+        }
     }
 
 }

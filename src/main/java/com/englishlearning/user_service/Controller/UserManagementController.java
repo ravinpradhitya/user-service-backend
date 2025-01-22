@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin
 @RestController
 public class UserManagementController {
     @Autowired
@@ -42,7 +43,7 @@ public class UserManagementController {
     }
 
     @PutMapping("/admin/update/{userId}")
-    public ResponseEntity<ReqRes> updateUser(@PathVariable String userId, @RequestBody OurUser reqres){
+    public ResponseEntity<ReqRes> updateUser(@PathVariable String userId, @RequestBody ReqRes reqres){
         return ResponseEntity.ok(userManagementService.updateUser(userId, reqres));
     }
 
@@ -58,4 +59,10 @@ public class UserManagementController {
     public ResponseEntity<ReqRes> deleteUSer(@PathVariable String userId){
         return ResponseEntity.ok(userManagementService.deleteUser(userId));
     }
+
+    @GetMapping("/teacher/student-list")
+    public ResponseEntity<ReqRes> getStudents(){
+        return ResponseEntity.ok(userManagementService.getStudents());
+    }
+
 }
